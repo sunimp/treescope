@@ -1,6 +1,6 @@
 import SwiftUI
-import UIKit
 import TreescopeServer
+import UIKit
 
 /// A real iOS app that embeds the Treescope server and mixes SwiftUI with a
 /// UIKit subtree (label, button, text field/keyboard) so the inspector can be
@@ -27,48 +27,61 @@ private struct RootView: View {
     @State private var sliderValue = 0.4
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    Text("SwiftUI section")
-                        .font(.title2).bold()
-
-                    GroupBox("Controls") {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Toggle("SwiftUI toggle", isOn: $toggle)
-                            HStack {
-                                Image(systemName: "speaker.fill")
-                                Slider(value: $sliderValue)
-                                Image(systemName: "speaker.wave.3.fill")
-                            }
-                            if toggle {
-                                Label("Enabled", systemImage: "checkmark.seal.fill")
-                                    .foregroundStyle(.green)
-                            }
-                        }
-                        .padding(8)
-                    }
-
-                    Text("UIKit section (touch + keyboard)")
-                        .font(.title2).bold()
-
-                    // A genuine UIKit subtree embedded via a representable.
-                    UIKitCard()
-                        .frame(height: 220)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                }
-                .padding(20)
+        if #available(iOS 16.0, *) {
+            NavigationStack {
+                content
             }
-            .navigationTitle("Treescope iOS")
+        } else {
+            NavigationView {
+                content
+            }
         }
+    }
+
+    private var content: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                Text("SwiftUI section")
+                    .font(.title2).bold()
+
+                GroupBox("Controls") {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Toggle("SwiftUI toggle", isOn: $toggle)
+                        HStack {
+                            Image(systemName: "speaker.fill")
+                            Slider(value: $sliderValue)
+                            Image(systemName: "speaker.wave.3.fill")
+                        }
+                        if toggle {
+                            Label("Enabled", systemImage: "checkmark.seal.fill")
+                                .foregroundStyle(.green)
+                        }
+                    }
+                    .padding(8)
+                }
+
+                Text("UIKit section (touch + keyboard)")
+                    .font(.title2).bold()
+
+                // A genuine UIKit subtree embedded via a representable.
+                UIKitCard()
+                    .frame(height: 220)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
+            .padding(20)
+        }
+        .navigationTitle("Treescope iOS")
     }
 }
 
 /// Bridges a UIKit view controller (label + text field + button + tap counter)
 /// into SwiftUI so the captured tree contains real UIView instances.
 private struct UIKitCard: UIViewControllerRepresentable {
-    func makeUIViewController(context: Context) -> UIKitCardController { UIKitCardController() }
-    func updateUIViewController(_ controller: UIKitCardController, context: Context) {}
+    func makeUIViewController(context _: Context) -> UIKitCardController {
+        UIKitCardController()
+    }
+
+    func updateUIViewController(_: UIKitCardController, context _: Context) {}
 }
 
 final class UIKitCardController: UIViewController {

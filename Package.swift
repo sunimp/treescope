@@ -4,9 +4,9 @@ import PackageDescription
 let package = Package(
     name: "Treescope",
     platforms: [
-        .macOS(.v13),
-        .iOS(.v16),
-        .tvOS(.v16),
+        .macOS(.v12),
+        .iOS(.v15),
+        .tvOS(.v15),
     ],
     products: [
         // Shared wire/data model. Pure Foundation, every platform.
